@@ -22,26 +22,26 @@ public class Main {
         // csv
         String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
         String csvFileName = "data.csv";
-        List<Employee> csvList = parseCSV(columnMapping, csvFileName);
+        List<Employee> csvList = parseCSV(columnMapping, new File(csvFileName));
         String csvJson = "data.json";
         toJsonAndSave(csvList, csvJson);
 
         // xml
         String xmlFileName = "data.xml";
-        List<Employee> xmlList = parseXML(xmlFileName);
+        List<Employee> xmlList = parseXML(new File(xmlFileName));
         String xmlJson = "data2.json";
         toJsonAndSave(xmlList, xmlJson);
 
         // json
         String jsonFileName = "csvData.json";
-        String json = readString(jsonFileName);
+        String json = readString(new File(jsonFileName));
         List<Employee> jsonList = jsonToList(json);
         if (jsonList.size() >= 2) {
             System.out.println(jsonList.get(0).toString() + '\n' + jsonList.get(1).toString());
         }
     }
 
-    static List<Employee> parseCSV(String[] cMapping, String fileName) {
+    static List<Employee> parseCSV(String[] cMapping, File fileName) {
         List<Employee> result = null;
         try (CSVReader reader = new CSVReader(new FileReader(fileName))) {
             ColumnPositionMappingStrategy<Employee> strategy =
@@ -61,13 +61,13 @@ public class Main {
         return result;
     }
 
-    static List<Employee> parseXML(String fileName) {
+    static List<Employee> parseXML(File fileName) {
         Node root = null;
         List<Employee> result = new ArrayList<>();
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new File(fileName));
+            Document doc = builder.parse(fileName);
 
             root = doc.getDocumentElement();
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public class Main {
         }
 
         if (root == null) { // probably not necessary, but doesn't hurt
-            return List.of();
+            return result;
         }
 
         NodeList nodeList = root.getChildNodes();
@@ -107,7 +107,7 @@ public class Main {
         }
     }
 
-    static String readString(String fileName) {
+    static String readString(File fileName) {
         try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             return br.readAllAsString();
         } catch (IOException e) {

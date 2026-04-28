@@ -25,4 +25,21 @@ public class Employee {
                 ", country=\'" + country + '\'' +
                 ", age=" + age + '}';
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        Employee comp = (Employee) obj;
+        if (comp.id == this.id &&
+            comp.firstName.equals(this.firstName) &&
+            comp.lastName.equals(this.lastName) &&
+            comp.country.equals(this.country) &&
+            comp.age == this.age)
+        {
+            return true;
+        }
+        return false;
+    }
 }
