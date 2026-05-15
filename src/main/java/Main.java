@@ -5,18 +5,22 @@ public class Main {
     public static final Map<Integer, Integer> sizeToFreq = new HashMap<>();
 
     public static void main(String[] args) throws InterruptedException {
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        Thread watcher = new Thread(Main::waiterThread);
+        List<Thread> threadList = new ArrayList<>();
+        watcher.start();
         for (int i = 0; i < 1000; i++) {
-            executor.execute(Main::computeROccurrence);
+            threadList.add(new Thread(Main::computeROccurrence));
+            threadList.getLast().start();
         }
-        executor.shutdown();
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+        for (var thread : threadList) {
+            thread.join();
+        }
+        watcher.interrupt();
         Map.Entry<Integer, Integer> maxSizeToFreq = Collections.max(sizeToFreq.entrySet(), Map.Entry.comparingByValue());
         System.out.println("Max sequence of " + maxSizeToFreq.getKey() + " Rs was found " + maxSizeToFreq.getValue() + " times.\n Other occurrences: ");
         for (var entry : sizeToFreq.entrySet()) {
             System.out.println(" - " + entry.getKey() + " (" + entry.getValue() + " times)");
         }
-
     }
 
     public static String generateRoute(String letters, int length) {
@@ -39,6 +43,23 @@ public class Main {
         synchronized (sizeToFreq) {
             int currentFreq = sizeToFreq.getOrDefault(counter, 0);
             sizeToFreq.put(counter, ++currentFreq);
+            sizeToFreq.notify();
+        }
+    }
+
+    static void waiterThread() {
+        while(!Thread.interrupted() ) {
+            synchronized (sizeToFreq) {
+                try {
+                    sizeToFreq.wait();
+                    if (!sizeToFreq.isEmpty()) {
+                        Map.Entry<Integer, Integer> entry = Collections.max(sizeToFreq.entrySet(), Map.Entry.comparingByValue());
+                        System.out.format("At that moment the biggest amount of Rs %d occurred %d times\n", entry.getKey(), entry.getValue());
+                    }
+                } catch (InterruptedException e) {
+                    e.getStackTrace();
+                }
+            }
         }
     }
 }
