@@ -9,6 +9,8 @@ public class Phonebook {
     Map<String, String> phoneToName = new HashMap<>();
 
     public int add(String name, String number) {
-        return 0;
+        nameToPhone.put(name, number);
+        phoneToName.put(number, name);
+        return nameToPhone.size();
     }
 }
