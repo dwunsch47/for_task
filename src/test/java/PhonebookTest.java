@@ -27,6 +27,13 @@ public class PhonebookTest {
         String result = pb.findByNumber(number);
 
         Assertions.assertEquals(name, result);
+    }
 
+    @Test
+    void givenIncorrectNumber_whenFindByNumber_thenReturnNull() {
+        pb.add("Name", "555");
+        String result = pb.findByNumber("WRONG");
+
+        Assertions.assertNull(result);
     }
 }
