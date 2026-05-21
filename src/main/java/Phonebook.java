@@ -23,6 +23,10 @@ public class Phonebook {
     }
 
     public String findByName(String name) {
-        return null;
+        String number = null;
+        if (nameToPhone.containsKey(name)) {
+            number = nameToPhone.get(name);
+        }
+        return number;
     }
 }
