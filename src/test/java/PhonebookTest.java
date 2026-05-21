@@ -1,15 +1,29 @@
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 
 public class PhonebookTest {
 
-    static Phonebook pb = null;
+    static ByteArrayOutputStream testOut = null;
+
+    Phonebook pb = null;
+
+    @BeforeAll
+    static void firstSetup() {
+        testOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(testOut));
+    }
 
     @BeforeEach
     void startup() {
         pb = new Phonebook();
+        testOut.reset();
+    }
+
+    @AfterAll
+    static void finalCleanUp() {
+        System.setOut(System.out); // kinda bad, because mb before tests setOut was non-default, but idk how to getOut()
     }
 
     @Test
@@ -55,4 +69,29 @@ public class PhonebookTest {
 
         Assertions.assertNull(result);
     }
+
+    @Test
+    void givenNonEmptyPhonebook_whenPrintAllNames_thenOutputAllNamesAlphabetically() {
+        String name1 = "Anna";
+        String name2 = "Bill";
+        String name3 = "Claire";
+
+        pb.add(name1, "334");
+        pb.add(name2, "543");
+        pb.add(name3, "2932");
+
+        String expected = "Anna, Bill, Claire" + System.lineSeparator();
+        pb.printAllNames();
+
+        Assertions.assertEquals(expected, testOut.toString());
+    }
+
+    @Test
+    void givenEmptyPhonebook_whenPrintAllNames_thenOutputEmptyString() {
+        pb.printAllNames();
+
+        Assertions.assertEquals(System.lineSeparator(), testOut.toString());
+    }
+
+
 }
