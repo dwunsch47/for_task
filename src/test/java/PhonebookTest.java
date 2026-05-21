@@ -80,7 +80,7 @@ public class PhonebookTest {
         pb.add(name2, "543");
         pb.add(name3, "2932");
 
-        String expected = "Anna, Bill, Claire" + System.lineSeparator();
+        String expected = "[Anna, Bill, Claire]" + System.lineSeparator();
         pb.printAllNames();
 
         Assertions.assertEquals(expected, testOut.toString());

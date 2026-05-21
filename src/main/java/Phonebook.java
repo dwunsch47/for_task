@@ -31,6 +31,11 @@ public class Phonebook {
     }
 
     public void printAllNames() {
-        System.out.println("");
+        String result = "";
+        if (!nameToPhone.isEmpty()) {
+            result = nameToPhone.keySet().toString();
+        }
+
+        System.out.println(result);
     }
 }
