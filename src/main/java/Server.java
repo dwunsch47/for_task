@@ -5,10 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class Server {
     final int NUMBER_OF_THREADS = 64;
@@ -29,6 +26,8 @@ public class Server {
              }
          } catch (IOException e) {
              e.printStackTrace();
+         } finally {
+             executor.shutdown();
          }
     }
 
