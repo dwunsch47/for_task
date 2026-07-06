@@ -1,3 +1,11 @@
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.net.URLEncodedUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Request {
@@ -6,9 +14,15 @@ public class Request {
         POST
     };
 
+
     Method method;
+
     String path;
+
+    List<NameValuePair> queryParams;
+
     String httpVersion;
+
     List<String> headers;
     String body = null;
 
@@ -19,7 +33,7 @@ public class Request {
 
     public Request(Method method, String path, String httpVersion, List<String> headers) {
         this.method = method;
-        this.path = path;
+        parsePathAndQueryParams(path);
         this.httpVersion = httpVersion;
         this.headers = headers;
     }
@@ -32,6 +46,14 @@ public class Request {
         return path;
      }
 
+     public Path getFilePath() { return Path.of(".", "public", path); }
+
+     public List<NameValuePair> getQueryParams() { return queryParams; };
+
+    public NameValuePair getQueryParam(String queryName) {
+        return queryParams.stream().filter(q -> q.getName().equals(queryName)).findFirst().orElse(new BasicNameValuePair("", ""));
+    }
+
      public String getHttpVersion() {
         return httpVersion;
      }
@@ -42,5 +64,11 @@ public class Request {
 
      public String getBody() {
         return (body == null ? "" : body);
+     }
+
+     void parsePathAndQueryParams(String path) {
+        int questionMarkIndex = path.indexOf('?');
+        this.path = path.substring(0, (questionMarkIndex == -1 ? path.length() : questionMarkIndex));
+        this.queryParams = URLEncodedUtils.parse(path.substring(questionMarkIndex + 1), StandardCharsets.UTF_8);
      }
 }
